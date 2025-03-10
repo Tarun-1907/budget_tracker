@@ -45,7 +45,7 @@ A simple yet powerful web application for tracking personal finances and managin
 
 2. Navigate to project directory
    ```bash
-   cd budget-tracker
+   cd budget_tracker
    ```
 
 3. Open index.html in your browser
