@@ -40,7 +40,7 @@ A simple yet powerful web application for tracking personal finances and managin
 ### Installation
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/budget-tracker.git
+   git clone https://github.com/yourusername/budget_tracker
    ```
 
 2. Navigate to project directory
@@ -165,31 +165,9 @@ budget-tracker/
    - Limit transaction history
    - Clear old data regularly
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch
-   ```bash
-   git checkout -b feature/AmazingFeature
-   ```
-3. Commit changes
-   ```bash
-   git commit -m 'Add some AmazingFeature'
-   ```
-4. Push to branch
-   ```bash
-   git push origin feature/AmazingFeature
-   ```
-5. Open Pull Request
-
 ## 📝 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
-## 📧 Contact
-
-Your Name - your.email@example.com
-Project Link: https://github.com/yourusername/budget-tracker
 
 ## 🙏 Acknowledgments
 
