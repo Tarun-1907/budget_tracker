@@ -1,0 +1,2286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Budget Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      :root {
+        --primary: #4f46e5;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --dark: #1e293b;
+        --light: #f1f5f9;
+        --white: #ffffff;
+        --primary-color: #2563eb;
+        --primary-rgb: 37, 99, 235;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --light-bg: #f1f5f9;
+        --border-color: #e2e8f0;
+      }
+
+      body {
+        background: var(--light);
+        min-height: 100vh;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .navbar {
+        background: var(--white);
+        padding: 1rem 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .nav-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--primary);
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logout-btn {
+        padding: 0.5rem 1rem;
+        background: var(--danger);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .logout-btn:hover {
+        opacity: 0.9;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 5rem auto 2rem;
+        padding: 0 1rem;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+      }
+
+      .card {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem; /* Increased gap */
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+      }
+
+      .card .form-group:first-of-type {
+        margin-top: 1rem; /* Space after title */
+      }
+
+      .card .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .balance-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .balance-card {
+        padding: 1.5rem;
+        border-radius: 12px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .balance-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: linear-gradient(
+          45deg,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+      }
+
+      .balance-card.total {
+        background: linear-gradient(135deg, #4f46e5, #3730a3);
+      }
+      .balance-card.income {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+      }
+      .balance-card.expense {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        font-weight: 500;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      }
+
+      .btn {
+        width: 100%;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #4338ca;
+        transform: translateY(-1px);
+      }
+
+      .transactions {
+        /* max-height: 1000000px; */
+        overflow-y: auto;
+        padding-right: 10px;
+      }
+
+      .transaction-item {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        transition: all 0.3s;
+      }
+
+      .transaction-item:hover {
+        background: #f8fafc;
+      }
+
+      .amount-income {
+        color: var(--success);
+        font-weight: 600;
+      }
+      .amount-expense {
+        color: var(--danger);
+        font-weight: 600;
+      }
+
+      .delete-btn {
+        padding: 0.4rem 0.6rem;
+        background: var(--danger);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-left: 0.5rem;
+        transition: all 0.3s;
+      }
+
+      .delete-btn:hover {
+        background: #dc2626;
+        transform: scale(1.05);
+      }
+
+      @media (max-width: 768px) {
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .balance-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .container {
+          margin-top: 4rem;
+        }
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--bg-light);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      /* Category Form Styles */
+      .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background-color: white;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+        margin-bottom: 1rem;
+      }
+
+      .form-group select:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+      }
+
+      /* Category Tag Styles */
+      .category-tag {
+        background: var(--primary-color);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        text-transform: capitalize;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .category-tag i {
+        font-size: 0.8rem;
+      }
+
+      /* Category Summary Section */
+      #category-summary {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      #category-summary h3 {
+        color: var(--text-dark);
+        margin-bottom: 16px;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #category-summary h3 i {
+        color: var(--primary-color);
+      }
+
+      .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      .category-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        background: var(--light-bg);
+        border-radius: 10px;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .category-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .category-item i {
+        font-size: 1.2rem;
+        color: var(--primary-color);
+        width: 24px;
+        text-align: center;
+      }
+
+      .category-details {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+
+      .category-details span {
+        text-transform: capitalize;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+      }
+
+      .category-details strong {
+        color: var(--text-dark);
+        font-size: 1.1rem;
+      }
+
+      /* Transaction Item Category Styles */
+      .transaction-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .transaction-header i {
+        color: var(--primary-color);
+        width: 20px;
+        text-align: center;
+      }
+
+      .transaction-details {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+      }
+
+      /* Category Colors */
+      .category-food {
+        color: #ff6b6b;
+      }
+      .category-shopping {
+        color: #4ecdc4;
+      }
+      .category-housing {
+        color: #45b7d1;
+      }
+      .category-transportation {
+        color: #96ceb4;
+      }
+      .category-utilities {
+        color: #ffeead;
+      }
+      .category-healthcare {
+        color: #ff9999;
+      }
+      .category-entertainment {
+        color: #9b59b6;
+      }
+      .category-salary {
+        color: #2ecc71;
+      }
+      .category-investment {
+        color: #f1c40f;
+      }
+      .category-other {
+        color: #95a5a6;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 768px) {
+        .category-grid {
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+
+        .category-item {
+          padding: 12px;
+        }
+
+        .category-details strong {
+          font-size: 1rem;
+        }
+
+        #category-summary {
+          padding: 16px;
+          margin-bottom: 16px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .category-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .category-tag {
+          padding: 2px 8px;
+          font-size: 0.7rem;
+        }
+
+        .transaction-details {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+
+      /* Empty State */
+      .no-categories {
+        text-align: center;
+        padding: 24px;
+        color: var(--text-muted);
+        background: var(--light-bg);
+        border-radius: 8px;
+        margin-top: 16px;
+      }
+
+      .no-categories i {
+        font-size: 2rem;
+        margin-bottom: 12px;
+        color: var(--primary-color);
+      }
+
+      /* Animation for category items */
+      .category-item {
+        animation: fadeIn 0.3s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Keep transaction list items visible */
+      #transaction-list {
+        overflow: visible;
+      }
+
+      .chat-icon {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background: #4caf50;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        transition: transform 0.3s;
+      }
+
+      .chat-icon:hover {
+        transform: scale(1.1);
+      }
+
+      .chat-icon i {
+        color: white;
+        font-size: 24px;
+      }
+
+      .chat-container {
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        width: 350px;
+        height: 500px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: none;
+        flex-direction: column;
+        z-index: 1000;
+        overflow: hidden;
+      }
+
+      .chat-container.active {
+        display: flex;
+      }
+
+      .chat-header {
+        padding: 15px;
+        background: #4caf50;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .chat-header button {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 5px;
+      }
+
+      .chat-messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+      }
+
+      .message {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 8px;
+        max-width: 80%;
+        word-wrap: break-word;
+      }
+
+      .message.user {
+        background: var(--primary-color);
+        color: white;
+        margin-left: auto;
+      }
+
+      .message.bot {
+        background: var(--bg-light);
+        color: var(--text-dark);
+      }
+
+      .chat-input {
+        padding: 15px;
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid var(--border);
+      }
+
+      .chat-input input {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        outline: none;
+      }
+
+      .chat-input button {
+        padding: 8px 15px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .chat-input button:hover {
+        opacity: 0.9;
+      }
+
+      .export-btn {
+        background: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 10px 0;
+        transition: background-color 0.3s;
+      }
+
+      .export-btn:hover {
+        background: #45a049;
+      }
+
+      .export-btn i {
+        font-size: 16px;
+      }
+
+      /* Toast notification styles */
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #333;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 5px;
+        display: none;
+        animation: slideIn 0.3s, fadeOut 0.3s 2.7s;
+        z-index: 1000;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+
+      /* Theme Toggle Button */
+      .theme-btn {
+        background: transparent;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        margin-right: 15px;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .theme-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      .theme-btn i {
+        font-size: 20px;
+        color: #4b5563;
+      }
+
+      /* Dark Theme Colors */
+      body.dark-mode {
+        background-color: #111827;
+        color: #e5e7eb;
+      }
+
+      /* Navbar Dark Mode */
+      body.dark-mode .navbar {
+        background-color: #1f2937;
+        border-bottom: 1px solid #374151;
+      }
+
+      /* Cards Dark Mode */
+      body.dark-mode .card,
+      body.dark-mode .balance-card,
+      body.dark-mode .form-container,
+      body.dark-mode .transactions {
+        background-color: #1f2937;
+        border: 1px solid #374151;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Form Elements Dark Mode */
+      body.dark-mode input,
+      body.dark-mode select {
+        background-color: #374151;
+        border-color: #4b5563;
+        color: #e5e7eb;
+      }
+
+      body.dark-mode input:focus,
+      body.dark-mode select:focus {
+        border-color: #60a5fa;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+      }
+
+      /* Transaction Items Dark Mode */
+      body.dark-mode .transaction-item {
+        border-bottom: 1px solid #374151;
+      }
+
+      body.dark-mode .transaction-item:hover {
+        background-color: #2d3748;
+      }
+
+      /* Amount Colors in Dark Mode */
+      body.dark-mode .amount-income {
+        color: #34d399; /* Bright green */
+      }
+
+      body.dark-mode .amount-expense {
+        color: #f87171; /* Bright red */
+      }
+
+      /* Text Colors in Dark Mode */
+      body.dark-mode h2,
+      body.dark-mode h3 {
+        color: #f3f4f6;
+      }
+
+      body.dark-mode .text-muted {
+        color: #9ca3af;
+      }
+
+      /* Button Styles in Dark Mode */
+      body.dark-mode .btn {
+        background-color: #3b82f6;
+        color: #ffffff;
+      }
+
+      body.dark-mode .btn:hover {
+        background-color: #2563eb;
+      }
+
+      body.dark-mode .delete-btn {
+        background-color: #ef4444;
+      }
+
+      body.dark-mode .delete-btn:hover {
+        background-color: #dc2626;
+      }
+
+      /* Chat Container Dark Mode */
+      body.dark-mode .chat-container {
+        background-color: #1f2937;
+        border: 1px solid #374151;
+      }
+
+      body.dark-mode .chat-header {
+        background-color: #2563eb;
+        color: #ffffff;
+      }
+
+      body.dark-mode .chat-messages {
+        background-color: #1f2937;
+      }
+
+      body.dark-mode .message.bot {
+        background-color: #374151;
+        color: #e5e7eb;
+      }
+
+      body.dark-mode .message.user {
+        background-color: #2563eb;
+        color: #ffffff;
+      }
+
+      body.dark-mode .chat-input input {
+        background-color: #374151;
+        border-color: #4b5563;
+        color: #e5e7eb;
+      }
+
+      /* Category Tags Dark Mode */
+      body.dark-mode .category-tag {
+        background-color: #374151;
+        color: #e5e7eb;
+      }
+
+      /* Balance Cards Specific Styles */
+      body.dark-mode .balance-card h3 {
+        color: white;
+      }
+
+      body.dark-mode .balance-card .amount {
+        color: #f3f4f6;
+      }
+
+      /* Scrollbar Dark Mode */
+      body.dark-mode ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      body.dark-mode ::-webkit-scrollbar-track {
+        background: #1f2937;
+      }
+
+      body.dark-mode ::-webkit-scrollbar-thumb {
+        background: #4b5563;
+        border-radius: 4px;
+      }
+
+      body.dark-mode ::-webkit-scrollbar-thumb:hover {
+        background: #6b7280;
+      }
+
+      /* Theme Button Dark Mode */
+      body.dark-mode .theme-btn {
+        background-color: transparent;
+      }
+
+      body.dark-mode .theme-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      body.dark-mode .theme-btn i {
+        color: #e5e7eb;
+      }
+
+      /* Transitions */
+      .card,
+      .balance-card,
+      .form-container,
+      .transactions,
+      input,
+      select,
+      .btn,
+      .transaction-item,
+      .theme-btn,
+      body {
+        transition: all 0.3s ease;
+      }
+
+      /* Dark Mode Styles for Recent Transactions and Expense Categories */
+      body.dark-mode .transactions,
+      body.dark-mode #category-summary {
+        background-color: #1f2937; /* Dark background */
+        border: 1px solid #374151; /* Border for separation */
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      body.dark-mode .transactions h2,
+      body.dark-mode #category-summary h3 {
+        color: #f3f4f6; /* Light text color for headers */
+        margin-bottom: 16px;
+      }
+
+      body.dark-mode .transaction-item,
+      body.dark-mode .category-item {
+        background-color: #2d3748; /* Slightly lighter dark background for items */
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: background-color 0.3s;
+      }
+
+      body.dark-mode .transaction-item:hover,
+      body.dark-mode .category-item:hover {
+        background-color: #374151; /* Hover effect */
+      }
+
+      body.dark-mode .transaction-info strong,
+      body.dark-mode .category-details strong {
+        color: #e5e7eb; /* Light text color for important text */
+      }
+
+      body.dark-mode .transaction-info small,
+      body.dark-mode .category-details span {
+        color: #9ca3af; /* Muted text color for less important text */
+      }
+
+      body.dark-mode .amount-income,
+      body.dark-mode .amount-expense {
+        color: #34d399; /* Bright green for income */
+      }
+
+      body.dark-mode .amount-expense {
+        color: #f87171; /* Bright red for expenses */
+      }
+
+      body.dark-mode .category-tag {
+        background-color: #374151; /* Dark background for category tags */
+        color: #e5e7eb; /* Light text color */
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        text-transform: capitalize;
+      }
+
+      .currency-selector {
+        display: flex;
+        align-items: center;
+        margin-right: 1rem;
+        position: relative;
+      }
+
+      .base-currency-select {
+        padding: 0.5rem 2rem 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--white);
+        color: var(--text-dark);
+        font-size: 0.9rem;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 1em;
+        transition: all 0.3s ease;
+      }
+
+      .base-currency-select:hover {
+        border-color: var(--primary);
+      }
+
+      .base-currency-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+      }
+
+      /* Dark mode styles */
+      body.dark-mode .base-currency-select {
+        background-color: var(--dark);
+        color: var(--light);
+        border-color: #374151;
+      }
+
+      body.dark-mode .base-currency-select:hover {
+        border-color: var(--primary);
+      }
+
+      body.dark-mode .base-currency-select option {
+        background-color: var(--dark);
+        color: var(--light);
+      }
+
+      /* Responsive styles */
+      @media (max-width: 768px) {
+        .currency-selector {
+          margin-right: 0.5rem;
+        }
+
+        .base-currency-select {
+          padding: 0.4rem 1.8rem 0.4rem 0.8rem;
+          font-size: 0.8rem;
+        }
+      }
+
+      /* Remove old currency-settings styles if they exist */
+      .currency-settings {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-content">
+        <div class="logo">
+          <i class="fas fa-wallet"></i>
+          <span>Budget Tracker</span>
+        </div>
+        <div class="user-info">
+          <div class="currency-selector">
+            <select id="base-currency" class="base-currency-select">
+              <option value="INR">INR (₹)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+            </select>
+          </div>
+          <span id="user-name">Welcome, User</span>
+          <button class="theme-btn" id="themeToggle">
+            <i class="fas fa-moon"></i>
+          </button>
+          <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="dashboard-grid">
+        <aside>
+          <div class="card">
+            <h2><i class="fas fa-plus-circle"></i> Add Transaction</h2>
+            <form id="transaction-form">
+              <div class="form-group">
+                <label>Description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="description"
+                  required
+                  placeholder="Enter description"
+                />
+              </div>
+              <div class="form-group">
+                <label>Amount</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="amount"
+                  step="0.01"
+                  required
+                  placeholder="Enter amount"
+                />
+              </div>
+              <div class="form-group">
+                <label>Type</label>
+                <select class="form-control" id="type" required>
+                  <option value="income">Income</option>
+                  <option value="expense">Expense</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" required>
+                  <option value="">Select Category</option>
+                  <option value="food">Food & Dining</option>
+                  <option value="shopping">Shopping</option>
+                  <option value="housing">Housing</option>
+                  <option value="transportation">Transportation</option>
+                  <option value="utilities">Utilities</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="salary">Salary</option>
+                  <option value="investment">Investment</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="currency">Currency</label>
+                <select id="currency" class="form-control" required>
+                  <option value="INR">INR (₹)</option>
+                  <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Transaction
+              </button>
+            </form>
+          </div>
+        </aside>
+
+        <main>
+          <div class="balance-cards">
+            <div class="balance-card total">
+              <h3>Total Balance</h3>
+              <h2 id="total-balance">$0.00</h2>
+              <i
+                class="fas fa-wallet"
+                style="
+                  position: absolute;
+                  right: 20px;
+                  bottom: 20px;
+                  font-size: 2rem;
+                  opacity: 0.2;
+                "
+              ></i>
+            </div>
+            <div class="balance-card income">
+              <h3>Total Income</h3>
+              <h2 id="total-income">$0.00</h2>
+              <i
+                class="fas fa-arrow-up"
+                style="
+                  position: absolute;
+                  right: 20px;
+                  bottom: 20px;
+                  font-size: 2rem;
+                  opacity: 0.2;
+                "
+              ></i>
+            </div>
+            <div class="balance-card expense">
+              <h3>Total Expenses</h3>
+              <h2 id="total-expenses">$0.00</h2>
+              <i
+                class="fas fa-arrow-down"
+                style="
+                  position: absolute;
+                  right: 20px;
+                  bottom: 20px;
+                  font-size: 2rem;
+                  opacity: 0.2;
+                "
+              ></i>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2><i class="fas fa-list"></i> Recent Transactions</h2>
+            <div id="transaction-list" class="transactions"></div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="chat-icon" onclick="toggleChat()">
+      <i class="fas fa-coins"></i>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+      <div class="chat-header">
+        <h3>Finance Advisor</h3>
+        <button onclick="toggleChat()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="message bot">
+          Hello! I can help you analyze your budget and provide recommendations.
+          Would you like to:
+         <b> 1. 📊 Budget Analysis</b> 
+          - Review your spending patterns 
+          - Get insights on your expenses 
+          - Track your savings progress
+         <b> 2. 💰 Financial Planning </b> 
+          - Create a budget plan 
+          - Set financial goals
+          - Investment suggestions 
+         <b> 3. 💡 Smart Tips </b> 
+          - Daily saving tips 
+          - Expense reduction strategies 
+          - Money management advice 
+         <b> 4. 🎯 Goal Setting </b> 
+          - Emergency fund planning 
+          - Savings targets 
+          - Investment objectives 
+         <b> 5. 💳 Debt Management </b> 
+          - Debt reduction strategies 
+          - Credit
+          score tips 
+          - Loan management advice 
+         <b> 6. 📈 Investment Advice </b> 
+          - Investment strategies 
+          - Portfolio diversification 
+          - Risk management tips 
+         <b> 7. 🏦 Emergency Fund </b> 
+          - Fund size calculation 
+          - Saving strategies
+          - Fund allocation tips. 
+         <b> Please choose a number (1-7) or type your question!</b>
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Type your message..." />
+        <button onclick="sendMessage()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+
+    <button onclick="exportTransactions()" class="export-btn">
+      <i class="fas fa-download"></i> Export Transactions
+    </button>
+
+    <div class="toast" id="toast">
+      <!-- Toast message will be dynamically added here -->
+    </div>
+
+    <script>
+      // Exchange rates relative to USD (as of current market rates)
+      const exchangeRates = {
+        USD: {
+          USD: 1,
+          INR: 83.34,
+          EUR: 0.92,
+          GBP: 0.79,
+        },
+        INR: {
+          INR: 1,
+          USD: 0.012,
+          EUR: 0.011,
+          GBP: 0.0095,
+        },
+        EUR: {
+          EUR: 1,
+          USD: 1.09,
+          INR: 90.59,
+          GBP: 0.86,
+        },
+        GBP: {
+          GBP: 1,
+          USD: 1.27,
+          INR: 105.34,
+          EUR: 1.17,
+        },
+      };
+
+      class BudgetTracker {
+        constructor() {
+          this.transactions = [];
+          this.baseCurrency = localStorage.getItem("baseCurrency") || "INR";
+          this.checkAuth();
+          this.initializeElements();
+          this.initializeEventListeners();
+          this.loadData();
+          this.initializeBaseCurrencySelector();
+        }
+
+        checkAuth() {
+          const session = JSON.parse(localStorage.getItem("session"));
+          if (!session) {
+            window.location.href = "login.html";
+            return;
+          }
+          document.getElementById(
+            "user-name"
+          ).textContent = `Welcome, ${session.user.fullname}`;
+        }
+
+        initializeElements() {
+          this.form = document.getElementById("transaction-form");
+          this.transactionList = document.getElementById("transaction-list");
+          this.balanceEl = document.getElementById("total-balance");
+          this.incomeEl = document.getElementById("total-income");
+          this.expenseEl = document.getElementById("total-expenses");
+          this.descriptionInput = document.getElementById("description");
+          this.amountInput = document.getElementById("amount");
+          this.typeInput = document.getElementById("type");
+          this.categoryInput = document.getElementById("category");
+          this.currencyInput = document.getElementById("currency");
+        }
+
+        initializeEventListeners() {
+          this.form.addEventListener("submit", (e) => this.handleFormSubmit(e));
+          this.transactionList.addEventListener("click", (e) => {
+            if (
+              e.target.classList.contains("delete-btn") ||
+              e.target.closest(".delete-btn")
+            ) {
+              const id = parseInt(e.target.closest(".delete-btn").dataset.id);
+              this.deleteTransaction(id);
+            }
+          });
+        }
+
+        initializeBaseCurrencySelector() {
+          const baseCurrencySelector = document.getElementById("base-currency");
+          baseCurrencySelector.value = this.baseCurrency;
+          baseCurrencySelector.addEventListener("change", (e) => {
+            this.baseCurrency = e.target.value;
+            localStorage.setItem("baseCurrency", this.baseCurrency);
+            this.updateBalances();
+            this.displayTransactions();
+          });
+        }
+
+        loadData() {
+          this.transactions =
+            JSON.parse(localStorage.getItem("transactions")) || [];
+          this.updateBalances();
+          this.displayTransactions();
+        }
+
+        handleFormSubmit(e) {
+          e.preventDefault();
+
+          if (!this.validateForm()) {
+            return;
+          }
+
+          const transaction = {
+            id: Date.now(),
+            description: this.descriptionInput.value.trim(),
+            amount: parseFloat(this.amountInput.value),
+            type: this.typeInput.value,
+            category: this.categoryInput.value,
+            date: new Date().toISOString(),
+            currency: this.currencyInput.value,
+          };
+
+          this.addTransaction(transaction);
+          this.form.reset();
+        }
+
+        validateForm() {
+          if (!this.descriptionInput.value.trim()) {
+            this.showNotification("Please enter a description", "danger");
+            return false;
+          }
+          if (!this.amountInput.value || this.amountInput.value <= 0) {
+            this.showNotification("Please enter a valid amount", "danger");
+            return false;
+          }
+          if (!this.categoryInput.value) {
+            this.showNotification("Please select a category", "danger");
+            return false;
+          }
+          return true;
+        }
+
+        convertCurrency(amount, fromCurrency, toCurrency) {
+          if (fromCurrency === toCurrency) return amount;
+          return (
+            amount *
+            (exchangeRates[fromCurrency][toCurrency] ||
+              1 / exchangeRates[toCurrency][fromCurrency])
+          );
+        }
+
+        addTransaction(transaction) {
+          transaction.id = Date.now();
+          transaction.date = new Date().toISOString();
+          transaction.convertedAmount = this.convertCurrency(
+            transaction.amount,
+            transaction.currency,
+            this.baseCurrency
+          );
+
+          this.transactions.unshift(transaction);
+          localStorage.setItem(
+            "transactions",
+            JSON.stringify(this.transactions)
+          );
+          this.updateBalances();
+          this.displayTransactions();
+          this.showNotification("Transaction added successfully!", "success");
+        }
+
+        deleteTransaction(id) {
+          if (confirm("Are you sure you want to delete this transaction?")) {
+            this.transactions = this.transactions.filter((t) => t.id !== id);
+            localStorage.setItem(
+              "transactions",
+              JSON.stringify(this.transactions)
+            );
+            this.updateBalances();
+            this.displayTransactions();
+            this.showNotification("Transaction deleted!", "danger");
+          }
+        }
+
+        updateBalances() {
+          const totals = this.transactions.reduce(
+            (acc, t) => {
+              const convertedAmount = this.convertCurrency(
+                t.amount,
+                t.currency,
+                this.baseCurrency
+              );
+
+              if (t.type === "income") {
+                acc.income += convertedAmount;
+              } else {
+                acc.expenses += convertedAmount;
+              }
+              return acc;
+            },
+            { income: 0, expenses: 0 }
+          );
+
+          const balance = totals.income - totals.expenses;
+
+          this.balanceEl.textContent = this.formatCurrency(balance);
+          this.incomeEl.textContent = this.formatCurrency(totals.income);
+          this.expenseEl.textContent = this.formatCurrency(totals.expenses);
+
+          this.balanceEl.parentElement.classList.toggle(
+            "negative",
+            balance < 0
+          );
+        }
+
+        getCategoryIcon(category) {
+          const icons = {
+            food: "fa-utensils",
+            shopping: "fa-shopping-cart",
+            housing: "fa-home",
+            transportation: "fa-car",
+            utilities: "fa-bolt",
+            healthcare: "fa-medkit",
+            entertainment: "fa-film",
+            salary: "fa-money-bill-wave",
+            investment: "fa-chart-line",
+            other: "fa-question-circle",
+          };
+          return icons[category] || "fa-tag";
+        }
+
+        displayTransactions() {
+          this.transactionList.innerHTML = this.transactions.length
+            ? ""
+            : '<div class="no-transactions">No transactions yet</div>';
+
+          this.transactions.forEach((transaction) => {
+            const div = document.createElement("div");
+            div.className = "transaction-item";
+
+            const convertedAmount = this.convertCurrency(
+              transaction.amount,
+              transaction.currency,
+              this.baseCurrency
+            );
+
+            div.innerHTML = `
+                        <div class="transaction-info">
+                            <div class="transaction-header">
+                                <i class="fas ${this.getCategoryIcon(
+                                  transaction.category
+                                )}"></i>
+                                <strong>${transaction.description}</strong>
+                            </div>
+                            <div class="transaction-details">
+                                <small>${new Date(
+                                  transaction.date
+                                ).toLocaleDateString()}</small>
+                                <span class="category-tag">${
+                                  transaction.category
+                                }</span>
+                                <span class="original-amount">${this.formatCurrency(
+                                  transaction.amount,
+                                  transaction.currency
+                                )}</span>
+                            </div>
+                        </div>
+                        <div class="amount-${transaction.type}">
+                            ${
+                              transaction.type === "expense" ? "-" : "+"
+                            }${this.formatCurrency(convertedAmount)}
+                        </div>
+                        <button class="delete-btn" data-id="${transaction.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+
+            this.transactionList.appendChild(div);
+          });
+
+          this.displayCategorySummary();
+        }
+
+        displayCategorySummary() {
+          const categoryTotals = this.transactions
+            .filter((t) => t.type === "expense")
+            .reduce((acc, t) => {
+              acc[t.category] = (acc[t.category] || 0) + t.convertedAmount;
+              return acc;
+            }, {});
+
+          let summaryEl = document.getElementById("category-summary");
+          if (!summaryEl) {
+            summaryEl = document.createElement("div");
+            summaryEl.id = "category-summary";
+            this.transactionList.parentElement.insertBefore(
+              summaryEl,
+              this.transactionList
+            );
+          }
+
+          const sortedCategories = Object.entries(categoryTotals).sort(
+            ([, a], [, b]) => b - a
+          );
+
+          summaryEl.innerHTML = `
+                    <h3>Expense Categories</h3>
+                    <div class="category-grid">
+                        ${sortedCategories
+                          .map(
+                            ([category, amount]) => `
+                            <div class="category-item">
+                                <i class="fas ${this.getCategoryIcon(
+                                  category
+                                )}"></i>
+                                <div class="category-details">
+                                    <span>${category}</span>
+                                    <strong>${this.formatCurrency(
+                                      amount
+                                    )}</strong>
+                                </div>
+                            </div>
+                        `
+                          )
+                          .join("")}
+                    </div>
+                `;
+        }
+
+        formatCurrency(amount, currency = this.baseCurrency) {
+          const currencySymbols = {
+            USD: "$",
+            INR: "₹",
+            EUR: "€",
+            GBP: "£",
+          };
+
+          return new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: currency,
+            currencyDisplay: "symbol",
+          }).format(amount);
+        }
+
+        showNotification(message, type) {
+          const notification = document.createElement("div");
+          notification.className = `notification ${type}`;
+          notification.innerHTML = `
+                    <i class="fas ${
+                      type === "success"
+                        ? "fa-check-circle"
+                        : "fa-exclamation-circle"
+                    }"></i>
+                    ${message}
+                `;
+
+          document.body.appendChild(notification);
+
+          setTimeout(() => {
+            notification.classList.add("show");
+          }, 100);
+
+          setTimeout(() => {
+            notification.classList.remove("show");
+            setTimeout(() => notification.remove(), 3000);
+          }, 3000);
+        }
+
+        logout() {
+          localStorage.removeItem("session");
+          window.location.href = "login.html";
+        }
+      }
+
+      // Add notification and additional styles
+      const additionalStyles = `
+            .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                border-radius: 8px;
+                color: white;
+                opacity: 0;
+                transform: translateY(-10px);
+                transition: all 0.3s;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .notification.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .notification.success {
+                background: var(--success);
+            }
+
+            .notification.danger {
+                background: var(--danger);
+            }
+
+            .category-tag {
+                background: var(--primary-color);
+                color: white;
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 0.75rem;
+                text-transform: capitalize;
+            }
+
+            .transaction-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .transaction-details {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 4px;
+            }
+
+            #category-summary {
+                background: white;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .category-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 16px;
+                margin-top: 16px;
+            }
+
+            .category-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px;
+                background: var(--light-bg);
+                border-radius: 8px;
+            }
+
+            .category-item i {
+                font-size: 1.2rem;
+                color: var(--primary-color);
+            }
+
+            .category-details {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .category-details span {
+                text-transform: capitalize;
+                color: var(--text-muted);
+                font-size: 0.9rem;
+            }
+
+            .no-transactions {
+                text-align: center;
+                padding: 20px;
+                color: #64748b;
+            }
+        `;
+
+      // Add the styles to the document
+      const style = document.createElement("style");
+      style.textContent = additionalStyles;
+      document.head.appendChild(style);
+
+      // Initialize the budget tracker
+      const budgetTracker = new BudgetTracker();
+
+      // Make logout function global
+      function logout() {
+        budgetTracker.logout();
+      }
+
+      function toggleChat() {
+        const chatContainer = document.getElementById("chatContainer");
+        chatContainer.classList.toggle("active");
+      }
+
+      function sendMessage() {
+        const input = document.getElementById("userInput");
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        // Add user message
+        addMessage(message, "user");
+        input.value = "";
+
+        // Process user message and get bot response
+        const botResponse = processUserMessage(message);
+
+        // Add bot response with a slight delay
+        setTimeout(() => {
+          addMessage(botResponse, "bot");
+        }, 500);
+      }
+
+      function addMessage(text, sender) {
+        const messagesContainer = document.getElementById("chatMessages");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${sender}`;
+        messageDiv.textContent = text;
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+
+      function processUserMessage(message) {
+        const lowerMessage = message.toLowerCase();
+
+        // Get financial data from budget tracker
+        const expenses = budgetTracker.transactions
+          .filter((t) => t.type === "expense")
+          .reduce((sum, t) => sum + t.convertedAmount, 0);
+
+        const income = budgetTracker.transactions
+          .filter((t) => t.type === "income")
+          .reduce((sum, t) => sum + t.convertedAmount, 0);
+
+        // Calculate monthly stats
+        const expenseRatio = ((expenses / income) * 100).toFixed(1);
+        const monthlySavings = income - expenses;
+        const savingsRatio = ((monthlySavings / income) * 100).toFixed(1);
+
+        // Get expense categories
+        const categoryExpenses = budgetTracker.transactions
+          .filter((t) => t.type === "expense")
+          .reduce((acc, t) => {
+            acc[t.category] = (acc[t.category] || 0) + t.convertedAmount;
+            return acc;
+          }, {});
+
+        // Enhanced response logic
+        if (
+          lowerMessage.includes("help") ||
+          lowerMessage.includes("start") ||
+          lowerMessage === ""
+        ) {
+          return (
+            `👋 Hello! I can help you with:\n\n` +
+            `1. 📊 Analyze your spending\n` +
+            `2. 💰 Create a budget plan\n` +
+            `3. 💡 Get saving tips\n` +
+            `4. 🎯 Set financial goals\n` +
+            `5. 💳 Debt management\n` +
+            `6. 📈 Investment advice\n` +
+            `7. 🏦 Emergency fund planning\n\n` +
+            `Type a number (1-7) or ask me anything!`
+          );
+        }
+
+        // Add number recognition
+        if (lowerMessage.includes("4") || lowerMessage.includes("goal")) {
+          return (
+            `🎯 Financial Goal Setting:\n\n` +
+            `Recommended Monthly Budget Plan (Based on ${formatCurrency(
+              income
+            )} income):\n\n` +
+            `Essential Expenses (50%):\n` +
+            `- Housing: ${formatCurrency(income * 0.3)} (30%)\n` +
+            `- Utilities: ${formatCurrency(income * 0.05)} (5%)\n` +
+            `- Food: ${formatCurrency(income * 0.1)} (10%)\n` +
+            `- Transportation: ${formatCurrency(income * 0.05)} (5%)\n\n` +
+            `Financial Goals (20%):\n` +
+            `- Emergency Fund: ${formatCurrency(income * 0.1)} (10%)\n` +
+            `- Investments: ${formatCurrency(income * 0.1)} (10%)\n\n` +
+            `Flexible Spending (30%):\n` +
+            `- Entertainment: ${formatCurrency(income * 0.1)} (10%)\n` +
+            `- Shopping: ${formatCurrency(income * 0.1)} (10%)\n` +
+            `- Others: ${formatCurrency(income * 0.1)} (10%)\n\n` +
+            `Would you like to:\n` +
+            `1. Customize this plan\n` +
+            `2. Get saving tips\n` +
+            `3. See your current spending breakdown`
+          );
+        }
+
+        if (lowerMessage.includes("5") || lowerMessage.includes("debt")) {
+          return (
+            `💳 Debt Management:\n\n` +
+            `Priority Order:\n` +
+            `1. High-interest Credit Cards\n` +
+            `2. Personal Loans\n` +
+            `3. Student Loans\n` +
+            `4. Mortgage\n\n` +
+            `Methods:\n` +
+            `- Avalanche: Highest interest first\n` +
+            `- Snowball: Smallest balance first\n` +
+            `- Consolidation: Combine multiple debts\n\n` +
+            `Would you like to:\n` +
+            `1. Create a debt payoff plan\n` +
+            `2. Learn about debt consolidation\n` +
+            `3. Get credit score tips`
+          );
+        }
+
+        if (lowerMessage.includes("6") || lowerMessage.includes("invest")) {
+          return (
+            `📈 Investment Guidance:\n\n` +
+            `Basic Investment Strategy:\n` +
+            `1. Emergency Fund First (3-6 months)\n` +
+            `2. Employer 401(k) Match\n` +
+            `3. Index Funds/ETFs\n` +
+            `4. Roth IRA\n\n` +
+            `Risk Levels:\n` +
+            `- Conservative: 60% Bonds, 40% Stocks\n` +
+            `- Moderate: 40% Bonds, 60% Stocks\n` +
+            `- Aggressive: 20% Bonds, 80% Stocks\n\n` +
+            `Would you like to:\n` +
+            `1. Learn about specific investment types\n` +
+            `2. Get retirement planning tips\n` +
+            `3. Understand risk management`
+          );
+        }
+
+        if (lowerMessage.includes("7") || lowerMessage.includes("emergency")) {
+          return (
+            `🏦 Emergency Fund Planning:\n\n` +
+            `Recommended Size:\n` +
+            `- Minimum: 3 months of expenses\n` +
+            `- Ideal: 6 months of expenses\n` +
+            `- Your target: ${formatCurrency(expenses * 6)}\n\n` +
+            `Where to Keep It:\n` +
+            `1. High-yield Savings Account\n` +
+            `2. Money Market Account\n` +
+            `3. Short-term CD Ladder\n\n` +
+            `Building Strategy:\n` +
+            `1. Start with $1,000 quick fund\n` +
+            `2. Automate monthly transfers\n` +
+            `3. Save tax refunds/bonuses\n\n` +
+            `Would you like to create a saving plan?`
+          );
+        }
+
+        // Update default response to match initial menu
+        return (
+          `I can help you with:\n\n` +
+          `1. 📊 Analyze your spending\n` +
+          `2. 💰 Create a budget plan\n` +
+          `3. 💡 Get saving tips\n` +
+          `4. 🎯 Set financial goals\n` +
+          `5. 💳 Debt management\n` +
+          `6. 📈 Investment advice\n` +
+          `7. 🏦 Emergency fund planning\n\n` +
+          `Type a number (1-7) or ask me anything!`
+        );
+      }
+
+      // Helper function for currency formatting
+      function formatCurrency(amount) {
+        return new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+        }).format(amount);
+      }
+
+      // Add event listener for Enter key in chat input
+      document
+        .getElementById("userInput")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            sendMessage();
+          }
+        });
+
+      class BudgetChatbot {
+        constructor() {
+          this.initializeElements();
+          this.initializeEventListeners();
+        }
+
+        initializeElements() {
+          this.chatIcon = document.querySelector(".chat-icon");
+          this.chatContainer = document.getElementById("chatContainer");
+          this.chatMessages = document.getElementById("chatMessages");
+          this.userInput = document.getElementById("userInput");
+        }
+
+        initializeEventListeners() {
+          this.userInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+              this.sendMessage();
+            }
+          });
+        }
+
+        toggleChat() {
+          this.chatContainer.classList.toggle("active");
+        }
+
+        sendMessage() {
+          const message = this.userInput.value.trim();
+          if (!message) return;
+
+          // Add user message
+          this.addMessage(message, "user");
+          this.userInput.value = "";
+
+          // Process and add bot response
+          const botResponse = this.processUserMessage(message);
+          setTimeout(() => {
+            this.addMessage(botResponse, "bot");
+          }, 500);
+        }
+
+        addMessage(text, sender) {
+          const messageDiv = document.createElement("div");
+          messageDiv.className = `message ${sender}`;
+          messageDiv.textContent = text;
+          this.chatMessages.appendChild(messageDiv);
+          this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+        }
+
+        processUserMessage(message) {
+          const lowerMessage = message.toLowerCase();
+
+          // Get financial data
+          const expenses = budgetTracker.transactions
+            .filter((t) => t.type === "expense")
+            .reduce((sum, t) => sum + t.convertedAmount, 0);
+
+          const income = budgetTracker.transactions
+            .filter((t) => t.type === "income")
+            .reduce((sum, t) => sum + t.convertedAmount, 0);
+
+          const monthlySavings = income - expenses;
+          const expenseRatio = ((expenses / income) * 100).toFixed(1);
+          const emergencyFund = income * 6;
+
+          // Initial menu
+          if (
+            lowerMessage.includes("help") ||
+            lowerMessage.includes("start") ||
+            lowerMessage === ""
+          ) {
+            return (
+              `👋 Hello! I can help you with:\n\n` +
+              `1. 📊 Analyze your spending\n` +
+              `2. 💰 Create a budget plan\n` +
+              `3. 💡 Get saving tips\n` +
+              `4. 🎯 Set financial goals\n` +
+              `5. 💳 Debt management\n` +
+              `6. 📈 Investment advice\n` +
+              `7. 🏦 Emergency fund planning\n\n` +
+              `Type a number (1-7) or ask me anything!`
+            );
+          }
+
+          // Option 1: Analyze spending
+          if (lowerMessage.includes("1") || lowerMessage.includes("analyze")) {
+            const categoryExpenses = budgetTracker.transactions
+              .filter((t) => t.type === "expense")
+              .reduce((acc, t) => {
+                acc[t.category] = (acc[t.category] || 0) + t.convertedAmount;
+                return acc;
+              }, {});
+
+            let analysis = `📊 Spending Analysis:\n\n`;
+            analysis += `Current Status:\n`;
+            analysis += `- Monthly Income: ${formatCurrency(income)}\n`;
+            analysis += `- Monthly Expenses: ${formatCurrency(expenses)}\n`;
+            analysis += `- Savings: ${formatCurrency(monthlySavings)}\n\n`;
+
+            analysis += `Category Breakdown:\n`;
+            for (const [category, amount] of Object.entries(categoryExpenses)) {
+              const percentage = ((amount / expenses) * 100).toFixed(1);
+              analysis += `- ${category}: ${formatCurrency(
+                amount
+              )} (${percentage}%)\n`;
+            }
+
+            if (expenseRatio > 90) {
+              analysis += `\n⚠️ Warning: Your expenses are ${expenseRatio}% of your income!\n`;
+              analysis += `Consider reducing expenses in your highest spending categories.`;
+            } else if (expenseRatio > 70) {
+              analysis += `\n📝 Note: Your expenses are ${expenseRatio}% of your income.\n`;
+              analysis += `There's room for improvement in your savings rate.`;
+            } else {
+              analysis += `\n✅ Great job! Your savings rate is healthy.\n`;
+              analysis += `Consider investing your surplus money.`;
+            }
+
+            return analysis;
+          }
+
+          // Option 2: Create budget plan
+          if (lowerMessage.includes("2") || lowerMessage.includes("budget")) {
+            const housing = income * 0.3;
+            const utilities = income * 0.1;
+            const food = income * 0.15;
+            const transport = income * 0.15;
+            const savings = income * 0.2;
+            const other = income * 0.1;
+
+            return (
+              `💰 Recommended Budget Plan:\n\n` +
+              `Based on ${formatCurrency(income)} income:\n\n` +
+              `Monthly Allocation:\n` +
+              `🏠 Housing: ${formatCurrency(housing)} (30%)\n` +
+              `🔌 Utilities: ${formatCurrency(utilities)} (10%)\n` +
+              `🍜 Food: ${formatCurrency(food)} (15%)\n` +
+              `🚗 Transport: ${formatCurrency(transport)} (15%)\n` +
+              `💰 Savings: ${formatCurrency(savings)} (20%)\n` +
+              `📦 Other: ${formatCurrency(other)} (10%)\n\n` +
+              `Want to customize this plan? Ask me how!`
+            );
+          }
+
+          // Option 3: Saving tips
+          if (lowerMessage.includes("3") || lowerMessage.includes("tips")) {
+            return (
+              `💡 Smart Saving Tips:\n\n` +
+              `Daily Habits:\n` +
+              `1. Use the 24-hour rule for purchases\n` +
+              `2. Pack lunch for work\n` +
+              `3. Use cashback apps and cards\n` +
+              `4. Track all expenses\n\n` +
+              `Monthly Actions:\n` +
+              `5. Review and cancel unused subscriptions\n` +
+              `6. Negotiate bills (internet, phone, etc.)\n` +
+              `7. Plan meals and grocery lists\n` +
+              `8. Use budget-tracking apps\n\n` +
+              `Smart Strategies:\n` +
+              `9. Automate savings transfers\n` +
+              `10. Build an emergency fund\n` +
+              `11. Compare prices before big purchases\n` +
+              `12. Use the 50/30/20 budget rule\n\n` +
+              `Want specific tips for any category?`
+            );
+          }
+
+          // Option 4: Financial goals
+          if (lowerMessage.includes("4") || lowerMessage.includes("goal")) {
+            return (
+              `🎯 Financial Goal Setting:\n\n` +
+              `Based on your income of ${formatCurrency(income)}:\n\n` +
+              `Recommended Monthly Goals:\n` +
+              `- Emergency Fund: ${formatCurrency(income * 0.1)}\n` +
+              `- Retirement: ${formatCurrency(income * 0.15)}\n` +
+              `- Short-term Savings: ${formatCurrency(income * 0.05)}\n\n` +
+              `Suggested Timeline:\n` +
+              `1. Build $1,000 emergency fund (1-2 months)\n` +
+              `2. Pay off high-interest debt (3-6 months)\n` +
+              `3. Full emergency fund (6-12 months)\n` +
+              `4. Start retirement contributions\n\n` +
+              `Want to create a custom goal plan?`
+            );
+          }
+
+          // Option 5: Debt management
+          if (lowerMessage.includes("5") || lowerMessage.includes("debt")) {
+            return (
+              `💳 Debt Management Strategies:\n\n` +
+              `Recommended Methods:\n` +
+              `1. Avalanche (Highest interest first)\n` +
+              `2. Snowball (Smallest balance first)\n` +
+              `3. Consolidation (Single payment)\n\n` +
+              `Priority Order:\n` +
+              `1. Credit Cards (15%+ interest)\n` +
+              `2. Personal Loans\n` +
+              `3. Student Loans\n` +
+              `4. Mortgage\n\n` +
+              `Quick Tips:\n` +
+              `- Pay more than minimums\n` +
+              `- Consider balance transfers\n` +
+              `- Negotiate rates\n` +
+              `- Avoid new debt\n\n` +
+              `Need a detailed debt payoff plan?`
+            );
+          }
+
+          // Option 6: Investment advice
+          if (lowerMessage.includes("6") || lowerMessage.includes("invest")) {
+            const investableAmount =
+              monthlySavings > 0 ? monthlySavings * 0.5 : 0;
+
+            return (
+              `📈 Investment Guidance:\n\n` +
+              `Recommended monthly investment: ${formatCurrency(
+                investableAmount
+              )}\n\n` +
+              `Investment Priority:\n` +
+              `1. Emergency Fund First\n` +
+              `2. 401(k) up to employer match\n` +
+              `3. Roth IRA\n` +
+              `4. Additional 401(k)\n` +
+              `5. Taxable investments\n\n` +
+              `Investment Mix:\n` +
+              `- Conservative: 60% Bonds, 40% Stocks\n` +
+              `- Moderate: 40% Bonds, 60% Stocks\n` +
+              `- Aggressive: 20% Bonds, 80% Stocks\n\n` +
+              `Want to explore specific investments?`
+            );
+          }
+
+          // Option 7: Emergency fund
+          if (
+            lowerMessage.includes("7") ||
+            lowerMessage.includes("emergency")
+          ) {
+            const currentSavings = monthlySavings > 0 ? monthlySavings : 0;
+            const monthsToGoal = Math.ceil(emergencyFund / currentSavings);
+
+            return (
+              `🏦 Emergency Fund Planning:\n\n` +
+              `Target: ${formatCurrency(emergencyFund)} (6 months expenses)\n` +
+              `Current Monthly Saving: ${formatCurrency(currentSavings)}\n\n` +
+              `Action Plan:\n` +
+              `1. Start with $1,000 quick fund\n` +
+              `2. Save ${formatCurrency(income * 0.1)} monthly\n` +
+              `3. Keep in high-yield savings\n` +
+              `4. Time to goal: ${monthsToGoal} months\n\n` +
+              `Want a custom saving schedule?`
+            );
+          }
+
+          // Default response
+          return (
+            `I can help you with:\n\n` +
+            `1. 📊 Analyze your spending\n` +
+            `2. 💰 Create a budget plan\n` +
+            `3. 💡 Get saving tips\n` +
+            `4. 🎯 Set financial goals\n` +
+            `5. 💳 Debt management\n` +
+            `6. 📈 Investment advice\n` +
+            `7. 🏦 Emergency fund planning\n\n` +
+            `Type a number (1-7) or ask me anything!`
+          );
+        }
+
+        formatCurrency(amount) {
+          return new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+          }).format(amount);
+        }
+      }
+
+      // Initialize the chatbot
+      const chatbot = new BudgetChatbot();
+
+      // Make toggleChat function global
+      function toggleChat() {
+        chatbot.toggleChat();
+      }
+
+      // Make sendMessage function global
+      function sendMessage() {
+        chatbot.sendMessage();
+      }
+
+      function exportTransactions() {
+        try {
+          // Get transactions from your budget tracker
+          const transactions = budgetTracker.transactions;
+
+          // Create CSV header
+          const headers = ["Date", "Description", "Amount", "Type", "Category"];
+
+          // Convert transactions to CSV format
+          const csvContent = [
+            headers.join(","), // Add headers
+            ...transactions.map((t) =>
+              [
+                new Date(t.date).toLocaleDateString(),
+                `"${t.description}"`, // Wrap description in quotes to handle commas
+                t.convertedAmount,
+                t.type,
+                t.category,
+              ].join(",")
+            ),
+          ].join("\n");
+
+          // Create file name with current date
+          const date = new Date().toLocaleDateString().replace(/\//g, "-");
+          const fileName = `budget-tracker-${date}.csv`;
+
+          // Create and trigger download
+          const blob = new Blob([csvContent], {
+            type: "text/csv;charset=utf-8;",
+          });
+          const link = document.createElement("a");
+
+          // Create download link
+          if (navigator.msSaveBlob) {
+            // IE 10+
+            navigator.msSaveBlob(blob, fileName);
+          } else {
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          }
+
+          // Show success message
+          showToast("Transactions exported successfully!");
+        } catch (error) {
+          console.error("Export failed:", error);
+          showToast("Export failed. Please try again.", "error");
+        }
+      }
+
+      // Add toast notification function
+      function showToast(message, type = "success") {
+        // Create toast element if it doesn't exist
+        let toast = document.getElementById("toast");
+        if (!toast) {
+          toast = document.createElement("div");
+          toast.id = "toast";
+          toast.className = "toast";
+          document.body.appendChild(toast);
+        }
+
+        // Set toast message and style
+        toast.textContent = message;
+        toast.style.backgroundColor =
+          type === "success" ? "#4CAF50" : "#f44336";
+        toast.style.display = "block";
+
+        // Hide toast after 3 seconds
+        setTimeout(() => {
+          toast.style.display = "none";
+        }, 3000);
+      }
+
+      // Add this JavaScript code
+      document.addEventListener("DOMContentLoaded", () => {
+        const themeToggle = document.getElementById("themeToggle");
+        const icon = themeToggle.querySelector("i");
+
+        // Check for saved theme preference
+        if (localStorage.getItem("darkMode") === "true") {
+          document.body.classList.add("dark-mode");
+          icon.classList.replace("fa-moon", "fa-sun");
+        }
+
+        // Theme toggle functionality
+        themeToggle.addEventListener("click", () => {
+          document.body.classList.toggle("dark-mode");
+
+          // Update icon
+          if (document.body.classList.contains("dark-mode")) {
+            icon.classList.replace("fa-moon", "fa-sun");
+            localStorage.setItem("darkMode", "true");
+          } else {
+            icon.classList.replace("fa-sun", "fa-moon");
+            localStorage.setItem("darkMode", "false");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
