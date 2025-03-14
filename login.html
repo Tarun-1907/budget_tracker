@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Budget Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            height: 100vh; /* Fixed height */
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        .login-container {
+            display: flex;
+            width: 1100px;
+            height: calc(100vh - 40px); /* Adjust height to fit viewport */
+            max-height: 800px; /* Maximum height */
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-sidebar {
+            flex: 1;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            padding: 40px;
+            color: white;
+            position: relative;
+            overflow-y: auto; /* Allow scrolling if needed */
+        }
+
+        .welcome-text {
+            margin-bottom: 30px;
+        }
+
+        .welcome-text h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .welcome-text p {
+            font-size: 18px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .features-list {
+            margin-top: 30px;
+            list-style: none;
+        }
+
+        .features-list li {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+        }
+
+        .features-list i {
+            margin-right: 20px;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-form-container {
+            flex: 1;
+            padding: 40px;
+            background: white;
+        }
+
+        .login-header {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .login-header h1 {
+            font-size: 32px;
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+
+        .login-header p {
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #1e293b;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            color: #64748b;
+        }
+
+        .remember-me input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            background: #6366f1;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        .login-footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .login-footer a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .login-footer a:hover {
+            color: #4f46e5;
+        }
+
+        .error-message, .success-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fee2e2;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #dcfce7;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .stat-item p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .login-container {
+                width: calc(100vw - 40px);
+                height: calc(100vh - 40px);
+            }
+        }
+
+        @media (max-height: 700px) {
+            .login-sidebar, .login-form-container {
+                padding: 20px;
+            }
+            
+            .features-list li {
+                margin-bottom: 15px;
+            }
+            
+            .stats-grid {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left sidebar -->
+        <div class="login-sidebar">
+            <div class="welcome-text">
+                <h2>Welcome Back!</h2>
+                <p>Track your expenses, manage your budget, and achieve your financial goals with our powerful tools.</p>
+            </div>
+
+            <ul class="features-list">
+                <li>
+                    <i class="fas fa-chart-line"></i>
+                    <span>Track expenses in real-time</span>
+                </li>
+                <li>
+                    <i class="fas fa-wallet"></i>
+                    <span>Manage multiple accounts</span>
+                </li>
+                <li>
+                    <i class="fas fa-bell"></i>
+                    <span>Smart spending alerts</span>
+                </li>
+                <li>
+                    <i class="fas fa-piggy-bank"></i>
+                    <span>Set & achieve savings goals</span>
+                </li>
+            </ul>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3>50K+</h3>
+                    <p>Active Users</p>
+                </div>
+                <div class="stat-item">
+                    <h3>$2M+</h3>
+                    <p>Budget Managed</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side login form -->
+        <div class="login-form-container">
+            <div class="login-header">
+                <h1>Sign In</h1>
+                <p>Access your budget dashboard</p>
+            </div>
+
+            <div class="error-message" id="error-message"></div>
+            <div class="success-message" id="success-message"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" required 
+                           placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-field">
+                        <input type="password" id="password" name="password" class="form-control" required 
+                               placeholder="Enter your password">
+                        <span class="password-toggle" onclick="togglePassword()">
+                            <i class="far fa-eye"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+
+                <button type="submit" class="btn" id="login-btn">Sign In</button>
+            </form>
+
+            <div class="login-footer">
+                <p>Don't have an account? <a href="register.html">Sign up</a></p>
+                <p style="margin-top: 15px;">
+                    <a href="#" onclick="forgotPassword()">Forgot Password?</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('login-form');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const loginBtn = document.getElementById('login-btn');
+
+            // Toggle password visibility
+            window.togglePassword = function() {
+                const passwordInput = document.getElementById('password');
+                const toggleIcon = document.querySelector('.password-toggle i');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+            };
+
+            // Forgot password function
+            window.forgotPassword = function() {
+                // Hide the login form and show reset password form
+                const loginForm = document.getElementById('login-form');
+                const loginHeader = document.querySelector('.login-header');
+                const loginFooter = document.querySelector('.login-footer');
+                
+                // Update header
+                loginHeader.innerHTML = `
+                    <h1>Reset Password</h1>
+                    <p>Enter your email to reset your password</p>
+                `;
+
+                // Update form
+                loginForm.innerHTML = `
+                    <div class="form-group">
+                        <label for="reset-email">Email</label>
+                        <input type="email" id="reset-email" name="reset-email" class="form-control" required 
+                               placeholder="Enter your email">
+                    </div>
+                    <button type="button" class="btn" id="reset-btn" onclick="resetPassword()">Reset Password</button>
+                    <button type="button" class="btn" style="background: #64748b; margin-top: 10px;" onclick="backToLogin()">Back to Login</button>
+                `;
+
+                // Update footer
+                loginFooter.style.display = 'none';
+            };
+
+            // Add these new functions
+            window.resetPassword = function() {
+                const resetEmail = document.getElementById('reset-email').value;
+                const resetBtn = document.getElementById('reset-btn');
+                const errorMessage = document.getElementById('error-message');
+                const successMessage = document.getElementById('success-message');
+
+                // Reset messages
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+
+                // Validate email
+                if (!resetEmail || !resetEmail.includes('@')) {
+                    errorMessage.textContent = 'Please enter a valid email address';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+
+                // Show loading state
+                resetBtn.classList.add('loading');
+                resetBtn.textContent = 'Sending...';
+
+                try {
+                    // Get users from localStorage
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    const user = users.find(u => u.email === resetEmail);
+
+                    if (!user) {
+                        throw new Error('Email not found');
+                    }
+
+                    // Generate reset token
+                    const resetToken = Math.random().toString(36).slice(2);
+                    
+                    // Store reset token with timestamp
+                    user.resetToken = {
+                        token: resetToken,
+                        expires: Date.now() + 3600000 // 1 hour expiry
+                    };
+
+                    // Update user in localStorage
+                    localStorage.setItem('users', JSON.stringify(users));
+
+                    // Show success message
+                    successMessage.textContent = 'Password reset instructions sent to your email!';
+                    successMessage.style.display = 'block';
+
+                    // In a real app, you would send an email here
+                    console.log('Reset token:', resetToken);
+
+                    // Return to login after delay
+                    setTimeout(() => {
+                        backToLogin();
+                    }, 3000);
+
+                } catch (error) {
+                    errorMessage.textContent = error.message;
+                    errorMessage.style.display = 'block';
+                } finally {
+                    resetBtn.classList.remove('loading');
+                    resetBtn.textContent = 'Reset Password';
+                }
+            };
+
+            window.backToLogin = function() {
+                const loginForm = document.getElementById('login-form');
+                const loginHeader = document.querySelector('.login-header');
+                const loginFooter = document.querySelector('.login-footer');
+                const errorMessage = document.getElementById('error-message');
+                const successMessage = document.getElementById('success-message');
+
+                // Reset messages
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+
+                // Restore header
+                loginHeader.innerHTML = `
+                    <h1>Welcome Back</h1>
+                    <p>Login to manage your budget</p>
+                `;
+
+                // Restore form
+                loginForm.innerHTML = `
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" required 
+                               placeholder="Enter your email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-field">
+                            <input type="password" id="password" name="password" class="form-control" required 
+                                   placeholder="Enter your password">
+                            <span class="password-toggle" onclick="togglePassword()">
+                                <i class="far fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+
+                    <button type="submit" class="btn" id="login-btn">Login</button>
+                `;
+
+                // Restore footer
+                loginFooter.style.display = 'block';
+            };
+
+            // Form submission
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    // Get form values
+                    const formData = new FormData(loginForm);
+                    const email = formData.get('email');
+                    const password = formData.get('password');
+                    const remember = formData.get('remember') === 'on';
+
+                    try {
+                        // Show loading state
+                        loginBtn.classList.add('loading');
+                        loginBtn.textContent = 'Logging in...';
+                        errorMessage.style.display = 'none';
+
+                        // Get users from localStorage
+                        const users = JSON.parse(localStorage.getItem('users') || '[]');
+                        
+                        // Find user with matching credentials
+                        const user = users.find(u => u.email === email && u.password === password);
+
+                        if (!user) {
+                            throw new Error('Invalid email or password');
+                        }
+
+                        // Create session
+                        const session = {
+                            token: Math.random().toString(36).substring(2),
+                            user: {
+                                id: user.id,
+                                fullname: user.fullname,
+                                email: user.email
+                            }
+                        };
+
+                        // Store session
+                        localStorage.setItem('session', JSON.stringify(session));
+
+                        if (remember) {
+                            localStorage.setItem('rememberMe', 'true');
+                        }
+
+                        // Show success message
+                        successMessage.textContent = 'Login successful! Redirecting...';
+                        successMessage.style.display = 'block';
+
+                        // Redirect to dashboard
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1500);
+
+                    } catch (error) {
+                        // Show error message
+                        errorMessage.textContent = error.message;
+                        errorMessage.style.display = 'block';
+                    } finally {
+                        // Remove loading state
+                        loginBtn.classList.remove('loading');
+                        loginBtn.textContent = 'Login';
+                    }
+                });
+            }
+
+            // Check if user is already logged in
+            const session = localStorage.getItem('session');
+            if (session) {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,64 +1,69 @@
 # Budget Tracker Application
 
-A simple yet powerful web application for tracking personal finances and managing budgets. Built with vanilla JavaScript, HTML5, and CSS3.
+A comprehensive web application for tracking personal finances and managing budgets. Built with vanilla JavaScript, HTML5, and CSS3, featuring multi-currency support and dark mode.
 
 ## 🌟 Features
 
 ### Core Functionality
 - **Transaction Management**
   - Add income and expenses
-  - Categorize transactions
+  - Categorize transactions with icons
   - Delete transactions
   - Real-time balance updates
+  - Multi-currency support with dynamic base currency selection
+  - Transaction history with detailed view
 
 ### User Interface
-- **Dashboard Overview**
-  - Total balance display
-  - Income summary
-  - Expense summary
-  - Transaction history
+- **Modern Dashboard**
+  - Total balance display with gradient cards
+  - Income summary with animations
+  - Expense summary with category breakdown
+  - Dark/Light mode toggle
+  - Responsive design for all devices
 
-### Smart Assistant
-- **AI-Powered Chatbot**
-  - Budget analysis
-  - Spending recommendations
-  - Savings tips
-  - Financial planning advice
+### Smart Features
+- **AI-Powered Finance Assistant**
+  - Interactive chatbot for financial advice
+  - Budget analysis and recommendations
+  - Spending pattern insights
+  - Savings goals calculator
+  - Investment suggestions
+  - Debt management tips
+  - Emergency fund planning
+
+### Advanced Features
+- **Multi-Currency Support**
+  - User-selectable base currency
+  - Automatic currency conversion
+  - Support for USD, EUR, GBP, INR
+  - Real-time currency calculations
 
 ### Data Management
 - **Local Storage**
-  - Persistent data storage
-  - No backend required
-  - Secure local data handling
+  - Secure data persistence
+  - Export transactions to CSV
+  - Category-wise analysis
+  - Transaction search and filtering
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - Modern web browser (Chrome, Firefox, Safari, Edge)
-- Text editor (VS Code, Sublime Text, etc.)
+- JavaScript enabled
+- Local storage access
 
 ### Installation
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/budget_tracker
+   git clone https://github.com/yourusername/budget-tracker.git
    ```
 
 2. Navigate to project directory
    ```bash
-   cd budget_tracker
+   cd budget-tracker
    ```
 
 3. Open index.html in your browser
-   ```bash
-   # For macOS
-   open index.html
-
-   # For Linux
-   xdg-open index.html
-
-   # For Windows
-   start index.html
-   ```
 
 ## 💻 Usage
 
@@ -66,64 +71,75 @@ A simple yet powerful web application for tracking personal finances and managin
 1. Enter transaction description
 2. Input amount
 3. Select transaction type (Income/Expense)
-4. Choose category
-5. Click "Add Transaction"
+4. Choose category with icon
+5. Select currency
+6. Click "Add Transaction"
 
-### Managing Transactions
-- View all transactions in the list
-- Delete transactions using the delete button
-- Filter transactions by category
-- Sort by date or amount
+### Currency Management
+1. Select your preferred base currency
+2. All transactions will automatically convert
+3. View totals in your chosen currency
+4. Change base currency anytime
+
+### Theme Customization
+1. Click the theme toggle button
+2. Switch between light and dark modes
+3. Theme preference is saved automatically
 
 ### Using the Finance Assistant
-1. Click the chat icon in bottom right
+1. Click the chat icon
 2. Choose from available options:
    - Budget Analysis
-   - Planning Advice
+   - Investment Advice
    - Saving Tips
-3. Get personalized financial recommendations
+   - Debt Management
+   - Emergency Fund Planning
+3. Get personalized financial guidance
 
 ## 🎨 Customization
 
-### Colors
-The application uses CSS variables for easy customization:
+### Theme Colors
 ```css
 :root {
-    --primary-color: #2563eb;
-    --success: #16a34a;
-    --danger: #dc2626;
-    --text-dark: #1e293b;
-    --bg-light: #f1f5f9;
+    --primary: #4f46e5;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --dark: #1e293b;
+    --light: #f1f5f9;
 }
 ```
 
 ### Categories
-Modify categories in the HTML select options:
-```html
-<select id="category">
-    <option value="housing">Housing</option>
-    <option value="food">Food</option>
-    <!-- Add more categories -->
-</select>
-```
+Default categories include:
+- Food & Dining
+- Shopping
+- Housing
+- Transportation
+- Utilities
+- Healthcare
+- Entertainment
+- Salary
+- Investment
+- Other
 
 ## 📱 Responsive Design
 
-The application is fully responsive and works on:
-- Desktop computers
-- Tablets
-- Mobile phones
+Optimized for:
+- Desktop (1200px+)
+- Tablet (768px - 1199px)
+- Mobile (320px - 767px)
 
-## 🔒 Security
+## 🔒 Security Features
 
-### Data Privacy
-- All data is stored locally
-- No external servers involved
-- Data persists across sessions
-
-### Best Practices
-- Input validation
+### Data Protection
+- Local storage encryption
+- Session management
+- Input sanitization
 - XSS prevention
+
+### User Privacy
+- No external data transmission
+- Offline functionality
 - Secure data handling
 
 ## 🛠 Technical Details
@@ -132,20 +148,20 @@ The application is fully responsive and works on:
 ```
 budget-tracker/
 │
-├── index.html          # Main application file
-├── README.md          # Documentation
-├── .gitignore        # Git ignore file
+├── index.html          # Main application
+├── login.html         # User authentication
+├── register.html      # User registration
+├── README.md         # Documentation
 │
-└── backup/           # Backup directory
-    ├── login.html
-    ├── register.html
-    ├── styles.css
-    └── app.js
+└── assets/
+    ├── styles.css    # Styling
+    ├── app.js        # Core functionality
+    └── icons/        # UI icons
 ```
 
-### Technologies Used
+### Technologies
 - HTML5
-- CSS3
+- CSS3 with Custom Properties
 - JavaScript (ES6+)
 - Local Storage API
 - Font Awesome Icons
@@ -153,28 +169,53 @@ budget-tracker/
 ## 🐛 Troubleshooting
 
 ### Common Issues
-1. **Transactions not saving**
-   - Check if localStorage is enabled
+1. **Currency Conversion Issues**
+   - Check internet connection
+   - Verify exchange rates
+   - Reset base currency
+
+2. **Theme Toggle Problems**
    - Clear browser cache
+   - Check localStorage permissions
+   - Refresh page
 
-2. **Display issues**
-   - Ensure latest browser version
-   - Try hard refresh (Ctrl + F5)
+3. **Transaction History**
+   - Verify local storage space
+   - Clear old transactions
+   - Export data regularly
 
-3. **Performance**
-   - Limit transaction history
-   - Clear old data regularly
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch
+   ```bash
+   git checkout -b feature/NewFeature
+   ```
+3. Commit changes
+   ```bash
+   git commit -m 'Add NewFeature'
+   ```
+4. Push to branch
+   ```bash
+   git push origin feature/NewFeature
+   ```
+5. Open Pull Request
 
 ## 📝 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
+## 📧 Contact
+
+Your Name - your.email@example.com
+Project Link: https://github.com/yourusername/budget-tracker
+
 ## 🙏 Acknowledgments
 
 - Font Awesome for icons
-- Modern browser technologies
+- Exchange rate providers
 - Open source community
 
 ---
 
-**Note:** This project is for educational purposes and personal use. For production deployment, consider adding additional security measures and data backup solutions.
+**Note:** This project is continuously evolving. For production use, consider implementing additional security measures and regular backups.

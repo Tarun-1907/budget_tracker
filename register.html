@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Budget Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            overflow: hidden;
+        }
+
+        .register-container {
+            display: flex;
+            width: 1100px;
+            height: calc(100vh - 40px);
+            max-height: 800px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .register-sidebar {
+            flex: 1;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            padding: 40px;
+            color: white;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .welcome-text {
+            margin-bottom: 30px;
+        }
+
+        .welcome-text h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .welcome-text p {
+            font-size: 18px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .features-list {
+            margin-top: 30px;
+            list-style: none;
+        }
+
+        .features-list li {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+        }
+
+        .features-list i {
+            margin-right: 20px;
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .register-form-container {
+            flex: 1;
+            padding: 40px;
+            background: white;
+            overflow-y: auto;
+        }
+
+        .login-header {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .login-header h1 {
+            font-size: 32px;
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+
+        .login-header p {
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #1e293b;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .password-strength {
+            height: 4px;
+            background: #e2e8f0;
+            margin-top: 8px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s, background-color 0.3s;
+        }
+
+        .password-strength.very-weak .password-strength-bar { width: 20%; background: #ef4444; }
+        .password-strength.weak .password-strength-bar { width: 40%; background: #f97316; }
+        .password-strength.medium .password-strength-bar { width: 60%; background: #eab308; }
+        .password-strength.strong .password-strength-bar { width: 80%; background: #22c55e; }
+        .password-strength.very-strong .password-strength-bar { width: 100%; background: #15803d; }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            background: #6366f1;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .login-footer a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .login-footer a:hover {
+            color: #4f46e5;
+        }
+
+        .error-message, .success-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fee2e2;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #dcfce7;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .stat-item p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 1200px) {
+            .register-container {
+                width: calc(100vw - 40px);
+                height: calc(100vh - 40px);
+            }
+        }
+
+        @media (max-height: 700px) {
+            .register-sidebar, .register-form-container {
+                padding: 20px;
+            }
+            
+            .features-list li {
+                margin-bottom: 15px;
+            }
+            
+            .stats-grid {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <!-- Left sidebar -->
+        <div class="register-sidebar">
+            <div class="welcome-text">
+                <h2>Welcome to Budget Tracker</h2>
+                <p>Join thousands of users who are taking control of their finances with our powerful budgeting tools.</p>
+            </div>
+
+            <ul class="features-list">
+                <li>
+                    <i class="fas fa-chart-line"></i>
+                    <span>Track expenses in real-time</span>
+                </li>
+                <li>
+                    <i class="fas fa-wallet"></i>
+                    <span>Manage multiple accounts</span>
+                </li>
+                <li>
+                    <i class="fas fa-bell"></i>
+                    <span>Smart spending alerts</span>
+                </li>
+                <li>
+                    <i class="fas fa-piggy-bank"></i>
+                    <span>Set & achieve savings goals</span>
+                </li>
+            </ul>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3>50K+</h3>
+                    <p>Active Users</p>
+                </div>
+                <div class="stat-item">
+                    <h3>$2M+</h3>
+                    <p>Budget Managed</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side registration form -->
+        <div class="register-form-container">
+            <div class="login-header">
+                <h1>Create Account</h1>
+                <p>Start your financial journey today</p>
+            </div>
+
+            <div class="error-message" id="error-message"></div>
+            <div class="success-message" id="success-message"></div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="fullname">Full Name</label>
+                    <input type="text" id="fullname" name="fullname" class="form-control" required 
+                           placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" required 
+                           placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-field">
+                        <input type="password" id="password" name="password" class="form-control" required 
+                               placeholder="Enter your password">
+                        <span class="password-toggle" onclick="togglePassword('password')">
+                            <i class="far fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="password-strength" id="password-strength">
+                        <div class="password-strength-bar"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <div class="password-field">
+                        <input type="password" id="confirm-password" name="confirm-password" class="form-control" required 
+                               placeholder="Confirm your password">
+                        <span class="password-toggle" onclick="togglePassword('confirm-password')">
+                            <i class="far fa-eye"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="register-btn">Create Account</button>
+            </form>
+
+            <div class="login-footer">
+                <p>Already have an account? <a href="login.html">Sign in</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.getElementById('register-form');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const registerBtn = document.getElementById('register-btn');
+
+            // Toggle password visibility
+            window.togglePassword = function(inputId) {
+                const passwordInput = document.getElementById(inputId);
+                const toggleIcon = passwordInput.nextElementSibling.querySelector('i');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+            };
+
+            // Password strength checker
+            function checkPasswordStrength(password) {
+                let strength = 0;
+                
+                if (password.length >= 8) strength += 1;
+                if (password.match(/[A-Z]/)) strength += 1;
+                if (password.match(/[a-z]/)) strength += 1;
+                if (password.match(/[0-9]/)) strength += 1;
+                if (password.match(/[^A-Za-z0-9]/)) strength += 1;
+                
+                return strength;
+            }
+
+            // Validate email format
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            // Form submission
+            if (registerForm) {
+                registerForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    // Get form values
+                    const formData = new FormData(registerForm);
+                    const fullname = formData.get('fullname');
+                    const email = formData.get('email');
+                    const password = formData.get('password');
+                    const confirmPassword = formData.get('confirm-password');
+
+                    try {
+                        // Reset messages
+                        errorMessage.style.display = 'none';
+                        successMessage.style.display = 'none';
+
+                        // Show loading state
+                        registerBtn.disabled = true;
+                        registerBtn.textContent = 'Creating Account...';
+
+                        // Validate inputs
+                        if (!fullname || !email || !password || !confirmPassword) {
+                            throw new Error('All fields are required');
+                        }
+
+                        if (fullname.length < 3) {
+                            throw new Error('Name must be at least 3 characters long');
+                        }
+
+                        if (!isValidEmail(email)) {
+                            throw new Error('Please enter a valid email address');
+                        }
+
+                        if (password.length < 8) {
+                            throw new Error('Password must be at least 8 characters long');
+                        }
+
+                        if (checkPasswordStrength(password) < 3) {
+                            throw new Error('Password must include uppercase, lowercase, numbers, or special characters');
+                        }
+
+                        if (password !== confirmPassword) {
+                            throw new Error('Passwords do not match');
+                        }
+
+                        // Check if user already exists
+                        const users = JSON.parse(localStorage.getItem('users') || '[]');
+                        if (users.some(user => user.email === email)) {
+                            throw new Error('Email already registered');
+                        }
+
+                        // Create new user
+                        const newUser = {
+                            id: Date.now().toString(),
+                            fullname,
+                            email,
+                            password,
+                            createdAt: new Date().toISOString(),
+                            transactions: [],
+                            categories: [
+                                { id: '1', name: 'Food & Dining', budget: 0 },
+                                { id: '2', name: 'Transportation', budget: 0 },
+                                { id: '3', name: 'Shopping', budget: 0 },
+                                { id: '4', name: 'Entertainment', budget: 0 },
+                                { id: '5', name: 'Bills & Utilities', budget: 0 }
+                            ]
+                        };
+
+                        // Save user
+                        users.push(newUser);
+                        localStorage.setItem('users', JSON.stringify(users));
+
+                        // Show success message
+                        successMessage.textContent = 'Account created successfully! Redirecting to login...';
+                        successMessage.style.display = 'block';
+
+                        // Clear the form
+                        registerForm.reset();
+
+                        // Redirect to login page after delay
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 1500);
+
+                    } catch (error) {
+                        // Show error message
+                        errorMessage.textContent = error.message;
+                        errorMessage.style.display = 'block';
+                        
+                        // Scroll to error message
+                        errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } finally {
+                        // Reset button state
+                        registerBtn.disabled = false;
+                        registerBtn.textContent = 'Create Account';
+                    }
+                });
+            }
+
+            // Password strength indicator
+            const passwordInput = document.getElementById('password');
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    const strength = checkPasswordStrength(this.value);
+                    const strengthIndicator = document.getElementById('password-strength');
+                    
+                    if (strengthIndicator) {
+                        // Remove all classes first
+                        strengthIndicator.classList.remove('very-weak', 'weak', 'medium', 'strong', 'very-strong');
+                        
+                        // Add appropriate class based on strength
+                        if (strength === 1) strengthIndicator.classList.add('very-weak');
+                        else if (strength === 2) strengthIndicator.classList.add('weak');
+                        else if (strength === 3) strengthIndicator.classList.add('medium');
+                        else if (strength === 4) strengthIndicator.classList.add('strong');
+                        else if (strength === 5) strengthIndicator.classList.add('very-strong');
+                    }
+                });
+            }
+
+            // Check if user is already logged in
+            const session = localStorage.getItem('session');
+            if (session) {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html> 
